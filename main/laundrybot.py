@@ -34,7 +34,6 @@ MACHINES_INFO = {
     'dryer-ezlink': 'Dryer 1',
     'dryer-coin': 'Dryer 2'
 }
-user_response = ''
 DATA = MockData()
 REMINDERS = ReminderList()
 
@@ -260,10 +259,9 @@ def report(bot, update, user_data, from_pinned_level=False, new_message=False):
     return 1
 
 def get_response_ask_consent(bot, update, user_data):
-    global user_response
-    
     user_input = update.message.text
-    user_response = user_input
+    chat_id = update.message.chat_id
+    user_data['user_response'] = user_input
     query = update.callback_query
 
     yes_button = KeyboardButton(text='Yes', callback_data='Yes')
@@ -284,12 +282,14 @@ def get_response_ask_consent(bot, update, user_data):
 def get_consent_end(bot, update, user_data):
     user_input = update.message.text
     query = update.callback_query
+    chat_id = update.message.chat_id
 
     if user_input == 'Yes':
         text = 'Huge thanks!\n'
         username = update.message.chat.username
-        level = user_data['check_level']
-        add_response(username, level, user_response)
+        level = user_data['pinned_level']
+        response = user_data['user_response']
+        add_response(username, level, response)
     else:
         text = 'Okay, your response was not recorded.\n'
     text += 'Enter /start to restart the bot.'
